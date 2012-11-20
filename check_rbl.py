@@ -147,7 +147,7 @@ class ThreadRBL(threading.Thread):
                 check_addr = socket.gethostbyname(check_host)
             except socket.error:
                 check_addr = None
-            if check_addr == "127.0.0.2":
+            if check_addr != None and "127.0.0." in check_addr:
                 on_blacklist.append(root_name)
             
             #signals to queue job is done
