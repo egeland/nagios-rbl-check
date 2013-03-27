@@ -6,6 +6,6 @@ Licensed under the GPL v3. Enjoy.
 
 Contributors
 ------------
-Frode Egeland - https://github.com/egeland
-Tim Stoop - https://github.com/timstoop
+* Frode Egeland - https://github.com/egeland
+* Tim Stoop - https://github.com/timstoop
 
