@@ -3,6 +3,9 @@
 # This is a multi-threaded RBL lookup check for Icinga / Nagios.
 # Copyright (C) 2012 Frode Egeland <egeland[at]gmail.com>
 #
+# Modified by Kumina bv in 2013. We only added an option to use an
+# address instead of a hostname.
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -19,9 +22,9 @@
 
 import sys, os, getopt, socket, string
 
-rv = (2,7)
+rv = (2,6)
 if rv >= sys.version_info:
-    print "ERROR: Requires Python 2.7 or greater"
+    print "ERROR: Requires Python 2.6 or greater"
     sys.exit(3)
 
 import Queue, threading
@@ -130,7 +133,7 @@ class ThreadRBL(threading.Thread):
         while True:
             #grabs host from queue
             hostname,root_name = self.queue.get()
-            
+
             check_host = "%s.%s" % (hostname, root_name)
             try:
                 check_addr = socket.gethostbyname(check_host)
@@ -138,16 +141,20 @@ class ThreadRBL(threading.Thread):
                 check_addr = None
             if check_addr != None and "127.0.0." in check_addr:
                 on_blacklist.append(root_name)
-            
+
             #signals to queue job is done
             self.queue.task_done()
 
 def usage(argv0):
     print "%s -w <WARN level> -c <CRIT level> -h <hostname>" % argv0
+    print " or"
+    print "%s -w <WARN level> -c <CRIT level> -a <ipv4 address>" % argv0
 
 def main(argv, environ):
-    options, remainder = getopt.getopt(argv[1:], "w:c:h:", ["warn=","crit=","host="])
+    options, remainder = getopt.getopt(argv[1:], "w:c:h:a:", ["warn=","crit=","host=","address="])
     status = { 'OK' : 0 , 'WARNING' : 1, 'CRITICAL' : 2 , 'UNKNOWN' : 3}
+    host = None
+    addr = None
 
     if 3 != len(options):
         usage (argv[0])
@@ -160,18 +167,27 @@ def main(argv, environ):
             crit_limit = int(val)
         elif field in ('-h','--host'):
             host = val
+        elif field in ('-a','--address'):
+            addr = val
         else:
             usage (argv[0])
             sys.exit(status['UNKNOWN'])
 
-    try:
-        addr = socket.gethostbyname(host)
-    except:
-        print "ERROR: Host '%s' not found - maybe try a FQDN?" % host
+    if host and addr:
+        print "ERROR: Cannot use both host and address, choose one."
         sys.exit(status['UNKNOWN'])
+
+    if host:
+        try:
+            addr = socket.gethostbyname(host)
+        except:
+            print "ERROR: Host '%s' not found - maybe try a FQDN?" % host
+            sys.exit(status['UNKNOWN'])
     addr_parts = string.split(addr, '.')
     addr_parts.reverse()
     check_name = string.join(addr_parts, '.')
+    # We set this to make sure the output is nice. It's not used except for the output after this point.
+    host = addr
 
 ###### Thread stuff:
 
@@ -210,4 +226,3 @@ def main(argv, environ):
 
 if __name__ == "__main__":
     main (sys.argv, os.environ)
-
