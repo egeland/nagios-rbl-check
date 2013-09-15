@@ -35,7 +35,6 @@ serverlist = [
 "b.barracudacentral.org",
 "bhnc.njabl.org",
 "bl.deadbeef.com",
-"bl.emailbasura.org",
 "bl.spamcannibal.org",
 "bl.spamcop.net",
 "bl.technovision.dk",
