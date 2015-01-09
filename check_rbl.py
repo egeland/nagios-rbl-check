@@ -20,14 +20,48 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 #
 
-import sys, os, getopt, socket, string
+import sys
+import os
+import argparse
+import socket
+import string
 
 rv = (2,6)
 if rv >= sys.version_info:
     print "ERROR: Requires Python 2.6 or greater"
     sys.exit(3)
 
-import Queue, threading
+import Queue
+import threading
+
+# Argparse exits with error code 2 rather then 3 which makes the failure a 
+# Critical rather then UNKNOWN
+
+# Default required arguments
+parser = argparse.ArgumentParser(description='Icinga/Nagios spam blacklist check',
+    epilog='Example: check_rbl.py -w <WARN level> -c <CRIT level> -H <hostname>')
+
+parser.add_argument('--debug', dest='DEBUG', action='store_true',
+    help='Echo debug output to stdout')
+
+parser.add_argument('-w', '--warn', dest='WARN', action='store',
+    required='True', metavar='5',
+    help='Warning if host appears on X number of lists')
+                                                                                                                        
+parser.add_argument('-c', '--crit', dest='CRIT', action='store',
+    required='True', metavar='10',
+    help='Critical if host appears on X number of lists')
+
+# Require ONE or the Other - Host or IP
+target = parser.add_mutually_exclusive_group( required='True' )
+target.add_argument('-H', '--host', dest='HOST', action='store',
+    metavar='foo.example.com', help='hostname')
+
+target.add_argument('-a', '--address', dest='ADDR', action='store',
+    metavar='192.168.1.1', help='ipv4 address')
+
+args = parser.parse_args()
+
 
 serverlist = [
 "0spam.fusionzero.com",
@@ -142,37 +176,13 @@ class ThreadRBL(threading.Thread):
             #signals to queue job is done
             self.queue.task_done()
 
-def usage(argv0):
-    print "%s -w <WARN level> -c <CRIT level> -h <hostname>" % argv0
-    print " or"
-    print "%s -w <WARN level> -c <CRIT level> -a <ipv4 address>" % argv0
-
 def main(argv, environ):
-    options, remainder = getopt.getopt(argv[1:], "w:c:h:a:", ["warn=","crit=","host=","address="])
+    host       = args.HOST
+    addr       = args.ADDR
+    warn_limit = int(args.WARN)
+    crit_limit = int(args.CRIT)
+
     status = { 'OK' : 0 , 'WARNING' : 1, 'CRITICAL' : 2 , 'UNKNOWN' : 3}
-    host = None
-    addr = None
-
-    if 3 != len(options):
-        usage (argv[0])
-        sys.exit(status['UNKNOWN'])
-
-    for field, val in options:
-        if field in ('-w','--warn'):
-            warn_limit = int(val)
-        elif field in ('-c','--crit'):
-            crit_limit = int(val)
-        elif field in ('-h','--host'):
-            host = val
-        elif field in ('-a','--address'):
-            addr = val
-        else:
-            usage (argv[0])
-            sys.exit(status['UNKNOWN'])
-
-    if host and addr:
-        print "ERROR: Cannot use both host and address, choose one."
-        sys.exit(status['UNKNOWN'])
 
     if host:
         try:
