@@ -203,19 +203,18 @@ def main(argv, environ):
 
 ###### End Thread stuff
     
-    warn=False
-    if len(on_blacklist) >= warn_limit :
-        warn = True
-
-    crit=False
-    if len(on_blacklist) >= crit_limit:
-        crit = True
-    if warn == True:
-        if crit == True:
-            print 'CRITICAL: %s on %s spam blacklists|%s' % (host,len(on_blacklist),on_blacklist)
+    if on_blacklist:
+        output = '%s on %s spam blacklists : %s' % (host,
+                                                     len(on_blacklist),
+                                                     ', '.join(on_blacklist))
+        if len(on_blacklist) >= crit_limit:
+            print 'CRITICAL: %s' % output
             sys.exit(status['CRITICAL'])
+        if len(on_blacklist) >= warn_limit:
+            print 'WARNING: %s' % output
+            sys.exit(status['WARNING'])
         else:
-            print 'WARNING: %s on spam blacklist %s' % (host,on_blacklist[0],)
+            print 'OK: %s' % output
             sys.exit(status['WARNING'])
     else:
         print 'OK: %s not on known spam blacklists' % host
