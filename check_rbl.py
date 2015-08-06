@@ -227,7 +227,7 @@ def main(argv, environ):
             sys.exit(status['WARNING'])
         else:
             print 'OK: %s' % output
-            sys.exit(status['WARNING'])
+            sys.exit(status['OK'])
     else:
         print 'OK: %s not on known spam blacklists' % host
         sys.exit(status['OK'])
