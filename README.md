@@ -8,4 +8,4 @@ Contributors
 ------------
 * Frode Egeland - https://github.com/egeland
 * Tim Stoop - https://github.com/timstoop
-
+* Guillaume Subiron - https://github.com/maethor
