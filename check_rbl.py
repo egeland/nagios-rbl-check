@@ -37,6 +37,8 @@ import Queue
 import threading
 
 serverlist = [
+    "truncate.gbudb.net",
+    "bad.psky.me",
     "0spam.fusionzero.com",
     "access.redhawk.org",
     "b.barracudacentral.org",
