@@ -18,7 +18,7 @@ For example, to test whether hostname `mail.google.com` is listed on any known b
 
 To test the plugin, check `127.0.0.2` which should always come back as "listed" on every known blacklist. For example:
 
-     ./check_rbl.py -w 1 -c 3 -a 172.0.0.2
+     ./check_rbl.py -w 1 -c 3 -a 127.0.0.2
 
 # Known Blacklists
 A list of known blacklists included in the `check_rbl.py` script is located on this Wiki page:
