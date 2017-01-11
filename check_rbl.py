@@ -237,7 +237,7 @@ def main(argv, environ):
 # ##### End Thread stuff
 
     if on_blacklist:
-        output = '%s on %s spam blacklists : %s' % (host,
+        output = '%s on %s spam blacklist(s): %s' % (host,
                                                     len(on_blacklist),
                                                     ', '.join(on_blacklist))
         if len(on_blacklist) >= crit_limit:
