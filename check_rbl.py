@@ -23,22 +23,23 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
-#
 
+# Import Modules
 import sys
 import os
 import getopt
 import socket
 import string
+import Queue
+import threading
 
+# Python Version Check
 rv = (2, 6)
 if rv >= sys.version_info:
     print "ERROR: Requires Python 2.6 or greater"
     sys.exit(3)
 
-import Queue
-import threading
-
+# List of DNS Blacklists
 serverlist = [
     "0spam.fusionzero.com",
     "access.redhawk.org",
@@ -216,7 +217,8 @@ def main(argv, environ):
     addr_parts = string.split(addr, '.')
     addr_parts.reverse()
     check_name = string.join(addr_parts, '.')
-    # We set this to make sure the output is nice. It's not used except for the output after this point.
+    # We set this to make sure the output is nice.
+    # It's not used except for the output after this point.
     host = addr
 
 # ##### Thread stuff:
@@ -237,9 +239,8 @@ def main(argv, environ):
 # ##### End Thread stuff
 
     if on_blacklist:
-        output = '%s on %s spam blacklist(s): %s' % (host,
-                                                    len(on_blacklist),
-                                                    ', '.join(on_blacklist))
+        output = '%s on %s spam blacklist(s): %s' % (
+            host, len(on_blacklist), ', '.join(on_blacklist))
         if len(on_blacklist) >= crit_limit:
             print 'CRITICAL: %s' % output
             sys.exit(status['CRITICAL'])
