@@ -42,7 +42,7 @@ import threading
 serverlist = [
     "0spam.fusionzero.com",
     "access.redhawk.org",
-    "all.rbl.webiron.net,"
+    "all.rbl.webiron.net",
     "all.s5h.net",
     "b.barracudacentral.org",
     "bad.psky.me",
