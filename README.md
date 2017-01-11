@@ -20,6 +20,13 @@ To test the plugin, check `127.0.0.2` which should always come back as "listed" 
 
      ./check_rbl.py -w 1 -c 3 -a 172.0.0.2
 
+# Known Blacklists
+A list of known blacklists included in the `check_rbl.py` script is located on this Wiki page:
+
+https://github.com/egeland/nagios-rbl-check/wiki
+
+If you know of other DNS-based blacklists that should be considered for inclusion, please open an "Enhancement" issue.
+
 # Contributors
 * Frode Egeland - https://github.com/egeland
 * Steve Jenkins - https://github.com/stevejenkins
