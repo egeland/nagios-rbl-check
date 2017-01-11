@@ -1,7 +1,14 @@
-#nagios-rbl-check
+# Nagios RBL / DNSBL Check
 A Python-based Nagios/Icinga plugin to check whether a host is listed on any known DNS-based spam blacklists.
 
-#Usage
+# Requirements
+The plugin requires Python version 2.6 or higher. If you are using a system with more than one version of Python installed, edit the first line of the `check_rbl.py` script to point to the locally-installed version of Python you wish to use. On RHEL systems, for example, this might look like:
+
+    #! /usr/bin/env python26
+
+# Usage
+You can run the plugin using either a **hostname** (which will be resolved to an IP address) or an **IP address**:
+
     ./check_rbl.py -w <WARN level> -c <CRIT level> -h <hostname>
     ./check_rbl.py -w <WARN level> -c <CRIT level> -a <ipv4 address>
 
@@ -13,11 +20,11 @@ To test the plugin, check `127.0.0.2` which should always come back as "listed" 
 
      ./check_rbl.py -w 1 -c 3 -a 172.0.0.2
 
-#Contributors
+# Contributors
 * Frode Egeland - https://github.com/egeland
 * Steve Jenkins - https://github.com/stevejenkins
 * Tim Stoop - https://github.com/timstoop
 * Guillaume Subiron - https://github.com/maethor
 
-#License
+# License
 Licensed under the GPL v3. Enjoy.
