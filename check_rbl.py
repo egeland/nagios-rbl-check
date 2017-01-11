@@ -6,7 +6,10 @@
 # Modified by Kumina bv in 2013. We only added an option to use an
 # address instead of a hostname.
 #
-# Modified by Guillaume Subiron (Sysnove) in 2015 : mainly PEP8 
+# Modified by Guillaume Subiron (Sysnove) in 2015 : mainly PEP8
+#
+# Modified by Steve Jenkins (SteveJenkins.com) in 2017. Added a number
+# of additional DNSRBLs.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -37,13 +40,16 @@ import Queue
 import threading
 
 serverlist = [
-    "truncate.gbudb.net",
-    "bad.psky.me",
     "0spam.fusionzero.com",
     "access.redhawk.org",
+    "all.rbl.webiron.net,"
+    "all.s5h.net",
     "b.barracudacentral.org",
+    "bad.psky.me",
     "bhnc.njabl.org",
+    "bl.blocklist.de",
     "bl.deadbeef.com",
+    "bl.emailbasura.org",
     "bl.mailspike.net",
     "bl.spamcannibal.org",
     "bl.spamcop.net",
@@ -62,18 +68,24 @@ serverlist = [
     "dnsbl-1.uceprotect.net",
     "dnsbl-2.uceprotect.net",
     "dnsbl-3.uceprotect.net",
+    "dnsbl.anticaptcha.net",
+    "dnsbl.cobion.com",
     "dnsbl.cyberlogic.net",
+    "dnsbl.dronebl.org",
     "dnsbl.inps.de",
     "dnsbl.kempt.net",
     "dnsbl.njabl.org",
     "dnsbl.solid.net",
     "dnsbl.sorbs.net",
+    "dnsrbl.org",
     "drone.abuse.ch",
     "duinv.aupads.org",
+    "dul.dnsbl.sorbs.net",
     "dul.ru",
     "dyna.spamrats.com",
     "dynip.rothen.com",
     "forbidden.icm.edu.pl",
+    "hostkarma.junkemailfilter.com",
     "hil.habeas.com",
     "images.rbl.msrbl.net",
     "ips.backscatterer.org",
@@ -95,7 +107,9 @@ serverlist = [
     "proxy.block.transip.nl",
     "psbl.surriel.com",
     "rbl.interserver.net",
+    "rbl.megarbl.net",
     "rbl.orbitrbl.com",
+    "rbl.realtimeblacklist.com",
     "rbl.schulte.org",
     "rdts.dnsbl.net.au",
     "relays.bl.gweep.ca",
@@ -105,6 +119,7 @@ serverlist = [
     "ricn.dnsbl.net.au",
     "rmst.dnsbl.net.au",
     "short.rbl.jp",
+    "singular.ttk.pte.hu",
     "spam.abuse.ch",
     "spam.dnsbl.sorbs.net",
     "spam.rbl.msrbl.net",
@@ -114,16 +129,18 @@ serverlist = [
     "spamrbl.imp.ch",
     "spamsources.fabel.dk",
     "spamtrap.drbl.drand.net",
+    "srnblack.surgate.net",
     "t3direct.dnsbl.net.au",
     "tor.dnsbl.sectoor.de",
     "torserver.tor.dnsbl.sectoor.de",
+    "truncate.gbudb.net",
     "ubl.lashback.com",
     "ubl.unsubscore.com",
-    "virbl.bit.nl",
+    "virbl.dnsbl.bit.nl",
     "virus.rbl.jp",
     "virus.rbl.msrbl.net",
     "wormrbl.imp.ch",
-    "zen.spamhaus.org",
+    "zen.spamhaus.org"
 ]
 
 ####
