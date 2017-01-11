@@ -6,10 +6,10 @@
 # Modified by Kumina bv in 2013. We only added an option to use an
 # address instead of a hostname.
 #
-# Modified by Guillaume Subiron (Sysnove) in 2015 : mainly PEP8
+# Modified by Guillaume Subiron (Sysnove) in 2015 : mainly PEP8.
 #
 # Modified by Steve Jenkins (SteveJenkins.com) in 2017. Added a number
-# of additional DNSRBLs.
+# of additional DNSRBLs and made 100% PEP8 compliant.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,13 +33,13 @@ import string
 import Queue
 import threading
 
-# Python Version Check
+# Python version check
 rv = (2, 6)
 if rv >= sys.version_info:
     print "ERROR: Requires Python 2.6 or greater"
     sys.exit(3)
 
-# List of DNS Blacklists
+# List of DNS blacklists
 serverlist = [
     "0spam.fusionzero.com",
     "access.redhawk.org",
@@ -158,9 +158,8 @@ class ThreadRBL(threading.Thread):
 
     def run(self):
         while True:
-            # grabs host from queue
+            # Grab hosts from queue
             hostname, root_name = self.queue.get()
-
             check_host = "%s.%s" % (hostname, root_name)
             try:
                 check_addr = socket.gethostbyname(check_host)
@@ -169,7 +168,7 @@ class ThreadRBL(threading.Thread):
             if check_addr is not None and "127.0.0." in check_addr:
                 on_blacklist.append(root_name)
 
-            # signals to queue job is done
+            # Signal queue that job is done
             self.queue.task_done()
 
 
@@ -205,7 +204,7 @@ def main(argv, environ):
             sys.exit(status['UNKNOWN'])
 
     if host and addr:
-        print "ERROR: Cannot use both host and address, choose one."
+        print "ERROR: Cannot use both host and address. Please choose one."
         sys.exit(status['UNKNOWN'])
 
     if host:
@@ -217,43 +216,46 @@ def main(argv, environ):
     addr_parts = string.split(addr, '.')
     addr_parts.reverse()
     check_name = string.join(addr_parts, '.')
-    # We set this to make sure the output is nice.
-    # It's not used except for the output after this point.
+    # Make host and addr the same thing to simplify output functions below
     host = addr
 
-# ##### Thread stuff:
+# ##### Start thread stuff
 
-    # spawn a pool of threads, and pass them queue instance
+    # Spawn a pool of threads then pass them the queue
     for i in range(10):
         t = ThreadRBL(queue)
         t.setDaemon(True)
         t.start()
 
-    # populate queue with data
+    # Populate the queue
     for blhost in serverlist:
         queue.put((check_name, blhost))
 
-    # wait on the queue until everything has been processed
+    # Wait for everything in the queue to be processed
     queue.join()
 
-# ##### End Thread stuff
+# ##### End thread stuff
 
+# Create output
     if on_blacklist:
-        output = '%s on %s spam blacklist(s): %s' % (
+        output = '%s on %s blacklist(s): %s' % (
             host, len(on_blacklist), ', '.join(on_blacklist))
+        # Status is CRITICAL
         if len(on_blacklist) >= crit_limit:
             print 'CRITICAL: %s' % output
             sys.exit(status['CRITICAL'])
+        # Status is WARNING
         if len(on_blacklist) >= warn_limit:
             print 'WARNING: %s' % output
             sys.exit(status['WARNING'])
         else:
+            # Status is OK and host is blacklisted
             print 'OK: %s' % output
             sys.exit(status['OK'])
     else:
-        print 'OK: %s not on known spam blacklists' % host
+        # Status is OK and host is not blacklisted
+        print 'OK: %s not on any known blacklists' % host
         sys.exit(status['OK'])
-
 
 if __name__ == "__main__":
     main(sys.argv, os.environ)
