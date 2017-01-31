@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/egeland/nagios-rbl-check.svg?branch=master)](https://travis-ci.org/egeland/nagios-rbl-check)
+
 # Nagios RBL / DNSBL Check
 A Python-based Nagios/Icinga plugin to check whether a host is listed on any known DNS-based spam blacklists.
 
