@@ -1,43 +1,18 @@
-#! /usr/bin/env python
-#
-# This is a multi-threaded RBL lookup check for Icinga / Nagios.
-# Copyright (C) 2012 Frode Egeland <egeland[at]gmail.com>
-#
-# Modified by Kumina bv in 2013. We only added an option to use an
-# address instead of a hostname.
-#
-# Modified by Guillaume Subiron (Sysnove) in 2015 : mainly PEP8.
-#
-# Modified by Steve Jenkins (SteveJenkins.com) in 2017. Added a number
-# of additional DNSRBLs and made 100% PEP8 compliant.
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>
-
-# Import Modules
+#!/usr/bin/env python
 import sys
-import os
 import getopt
 import socket
-import string
-import Queue
 import threading
 
 # Python version check
-rv = (2, 6)
-if rv >= sys.version_info:
-    print "ERROR: Requires Python 2.6 or greater"
+if (2, 6) >= sys.version_info:
+    print("ERROR: Requires Python 2.6 or greater")
     sys.exit(3)
+elif sys.version_info[0] >= 3:
+    import queue
+else:
+    import Queue as queue
+
 
 # List of DNS blacklists
 serverlist = [
@@ -146,12 +121,6 @@ serverlist = [
     "zen.spamhaus.org"
 ]
 
-####
-
-queue = Queue.Queue()
-global on_blacklist
-on_blacklist = []
-
 
 class ThreadRBL(threading.Thread):
     def __init__(self, queue):
@@ -163,8 +132,10 @@ class ThreadRBL(threading.Thread):
             # Grab hosts from queue
             hostname, root_name = self.queue.get()
             check_host = "%s.%s" % (hostname, root_name)
+            print(check_host)
             try:
                 check_addr = socket.gethostbyname(check_host)
+                print(check_addr)
             except socket.error:
                 check_addr = None
             if check_addr is not None and "127.0.0." in check_addr:
@@ -175,21 +146,24 @@ class ThreadRBL(threading.Thread):
 
 
 def usage(argv0):
-    print "%s -w <WARN level> -c <CRIT level> -h <hostname>" % argv0
-    print " or"
-    print "%s -w <WARN level> -c <CRIT level> -a <ipv4 address>" % argv0
+    print("%s -w <WARN level> -c <CRIT level> -h <hostname>" % argv0)
+    print(" or")
+    print("%s -w <WARN level> -c <CRIT level> -a <ipv4 address>" % argv0)
 
 
-def main(argv, environ):
-    options, remainder = getopt.getopt(argv[1:],
-                                       "w:c:h:a:",
-                                       ["warn=", "crit=", "host=", "address="])
+if __name__ == "__main__":
+    queue = queue.Queue()
+    options, remainder = getopt.getopt(
+        sys.argv[1:],
+        "w:c:h:a:",
+        ["warn=", "crit=", "host=", "address="],
+    )
     status = {'OK': 0, 'WARNING': 1, 'CRITICAL': 2, 'UNKNOWN': 3}
     host = None
     addr = None
 
     if 3 != len(options):
-        usage(argv[0])
+        usage(sys.argv[0])
         sys.exit(status['UNKNOWN'])
 
     for field, val in options:
@@ -202,26 +176,28 @@ def main(argv, environ):
         elif field in ('-a', '--address'):
             addr = val
         else:
-            usage(argv[0])
+            usage(sys.argv[0])
             sys.exit(status['UNKNOWN'])
 
     if host and addr:
-        print "ERROR: Cannot use both host and address. Please choose one."
+        print("ERROR: Cannot use both host and address. Please choose one.")
         sys.exit(status['UNKNOWN'])
 
     if host:
         try:
             addr = socket.gethostbyname(host)
         except:
-            print "ERROR: Host '%s' not found - maybe try a FQDN?" % host
+            print("ERROR: Host '%s' not found - maybe try a FQDN?" % host)
             sys.exit(status['UNKNOWN'])
-    addr_parts = string.split(addr, '.')
+    addr_parts = addr.split('.')
     addr_parts.reverse()
-    check_name = string.join(addr_parts, '.')
+    check_name = '.'.join(addr_parts)
     # Make host and addr the same thing to simplify output functions below
     host = addr
 
-# ##### Start thread stuff
+    # ##### Start thread stuff
+
+    on_blacklist = []
 
     # Spawn a pool of threads then pass them the queue
     for i in range(10):
@@ -236,28 +212,25 @@ def main(argv, environ):
     # Wait for everything in the queue to be processed
     queue.join()
 
-# ##### End thread stuff
+    # ##### End thread stuff
 
-# Create output
+    # Create output
     if on_blacklist:
         output = '%s on %s blacklist(s): %s' % (
             host, len(on_blacklist), ', '.join(on_blacklist))
         # Status is CRITICAL
         if len(on_blacklist) >= crit_limit:
-            print 'CRITICAL: %s' % output
+            print('CRITICAL: %s' % output)
             sys.exit(status['CRITICAL'])
         # Status is WARNING
         if len(on_blacklist) >= warn_limit:
-            print 'WARNING: %s' % output
+            print('WARNING: %s' % output)
             sys.exit(status['WARNING'])
         else:
             # Status is OK and host is blacklisted
-            print 'OK: %s' % output
+            print('OK: %s' % output)
             sys.exit(status['OK'])
     else:
         # Status is OK and host is not blacklisted
-        print 'OK: %s not on any known blacklists' % host
+        print('OK: %s not on any known blacklists' % host)
         sys.exit(status['OK'])
-
-if __name__ == "__main__":
-    main(sys.argv, os.environ)
