@@ -1,7 +1,7 @@
 sudo: false
 language: python
 python:
- - "2.6"
+ # - "2.6"
  - "2.7"
  - "3.3"
  - "3.4"
@@ -12,9 +12,6 @@ cache:
     - $HOME/.cache/pip
 install:
  - pip install flake8 coverage coveralls
-branches:
- only:
-  - master
 script:
   - coverage run check_rbl.py -w99 -c99  -a 8.8.8.8
   - flake8
