@@ -30,14 +30,17 @@ import os
 import getopt
 import socket
 import string
-import Queue
+if sys.version_info.major == 3:
+    import queue as Queue
+else:
+    import Queue
 import threading
 import ipaddress
 
 # Python version check
 rv = (2, 6)
 if rv >= sys.version_info:
-    print "ERROR: Requires Python 2.6 or greater"
+    print("ERROR: Requires Python 2.6 or greater")
     sys.exit(3)
 
 # List of DNS blacklists
@@ -176,9 +179,9 @@ class ThreadRBL(threading.Thread):
 
 
 def usage(argv0):
-    print "%s -w <WARN level> -c <CRIT level> -h <hostname>" % argv0
-    print " or"
-    print "%s -w <WARN level> -c <CRIT level> -a <ip address>" % argv0
+    print("%s -w <WARN level> -c <CRIT level> -h <hostname>" % argv0)
+    print(" or")
+    print("%s -w <WARN level> -c <CRIT level> -a <ip address>" % argv0)
 
 
 def main(argv, environ):
@@ -207,24 +210,27 @@ def main(argv, environ):
             sys.exit(status['UNKNOWN'])
 
     if host and addr:
-        print "ERROR: Cannot use both host and address. Please choose one."
+        print("ERROR: Cannot use both host and address. Please choose one.")
         sys.exit(status['UNKNOWN'])
 
     if host:
         try:
             addr = socket.gethostbyname(host)
         except:
-            print "ERROR: Host '%s' not found - maybe try a FQDN?" % host
+            print("ERROR: Host '%s' not found - maybe try a FQDN?" % host)
             sys.exit(status['UNKNOWN'])
 
-    ip = ipaddress.ip_address(unicode(addr))
-    if (ip.version == 6):
-        addr_exploded = ipaddress.ip_address(unicode(addr)).exploded
-        check_name = string.join([c for c in addr_exploded if c != ':'], '.')[::-1]
+    if sys.version_info.major >= 3:
+        ip = ipaddress.ip_address(addr)
     else:
-        addr_parts = string.split(addr, '.')
+        ip = ipaddress.ip_address(unicode(addr))
+    if (ip.version == 6):
+        addr_exploded = ip.exploded
+        check_name = '.'.join([c for c in addr_exploded if c != ':'])[::-1]
+    else:
+        addr_parts = addr.split('.')
         addr_parts.reverse()
-        check_name = string.join(addr_parts, '.')
+        check_name = '.'.join(addr_parts)
     # Make host and addr the same thing to simplify output functions below
     host = addr
 
@@ -251,19 +257,19 @@ def main(argv, environ):
             host, len(on_blacklist), ', '.join(on_blacklist))
         # Status is CRITICAL
         if len(on_blacklist) >= crit_limit:
-            print 'CRITICAL: %s' % output
+            print('CRITICAL: %s' % output)
             sys.exit(status['CRITICAL'])
         # Status is WARNING
         if len(on_blacklist) >= warn_limit:
-            print 'WARNING: %s' % output
+            print('WARNING: %s' % output)
             sys.exit(status['WARNING'])
         else:
             # Status is OK and host is blacklisted
-            print 'OK: %s' % output
+            print('OK: %s' % output)
             sys.exit(status['OK'])
     else:
         # Status is OK and host is not blacklisted
-        print 'OK: %s not on any known blacklists' % host
+        print('OK: %s not on any known blacklists' % host)
         sys.exit(status['OK'])
 
 if __name__ == "__main__":
