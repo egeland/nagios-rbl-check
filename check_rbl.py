@@ -32,6 +32,7 @@ import socket
 import string
 import Queue
 import threading
+import ipaddress
 
 # Python version check
 rv = (2, 6)
@@ -177,7 +178,7 @@ class ThreadRBL(threading.Thread):
 def usage(argv0):
     print "%s -w <WARN level> -c <CRIT level> -h <hostname>" % argv0
     print " or"
-    print "%s -w <WARN level> -c <CRIT level> -a <ipv4 address>" % argv0
+    print "%s -w <WARN level> -c <CRIT level> -a <ip address>" % argv0
 
 
 def main(argv, environ):
@@ -215,9 +216,15 @@ def main(argv, environ):
         except:
             print "ERROR: Host '%s' not found - maybe try a FQDN?" % host
             sys.exit(status['UNKNOWN'])
-    addr_parts = string.split(addr, '.')
-    addr_parts.reverse()
-    check_name = string.join(addr_parts, '.')
+
+    ip = ipaddress.ip_address(unicode(addr))
+    if (ip.version == 6):
+        addr_exploded = ipaddress.ip_address(unicode(addr)).exploded
+        check_name = string.join([c for c in addr_exploded if c != ':'], '.')[::-1]
+    else:
+        addr_parts = string.split(addr, '.')
+        addr_parts.reverse()
+        check_name = string.join(addr_parts, '.')
     # Make host and addr the same thing to simplify output functions below
     host = addr
 
