@@ -10,6 +10,7 @@ install:
  - pip install flake8 coverage coveralls
 script:
   - coverage run check_rbl.py -w99 -c99  -a 8.8.8.8
+  - coverage run check_rbl.py -w99 -c99  -a ::ffff:7f00:2
   # - flake8
 after_success:
   - coverage report
