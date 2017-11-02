@@ -13,5 +13,5 @@ script:
   - coverage run check_rbl.py -w99 -c99  -a ::ffff:7f00:2
   # - flake8
 after_success:
-  - coverage report
+  - coverage report check_rbl.py
   - coveralls
