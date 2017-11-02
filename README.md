@@ -14,6 +14,7 @@ You can run the plugin using either a **hostname** (which will be resolved to an
 
     ./check_rbl.py -w <WARN level> -c <CRIT level> -h <hostname>
     ./check_rbl.py -w <WARN level> -c <CRIT level> -a <ipv4 address>
+    ./check_rbl.py -w <WARN level> -c <CRIT level> -a <ipv6 address>
 
 For example, to test whether hostname `mail.google.com` is listed on any known blacklist, with a **Warning** level of 1 blacklist and a **Critical** level of 3 blacklists, do:
 
