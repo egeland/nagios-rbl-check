@@ -9,6 +9,12 @@ The plugin requires Python version 2.6 or higher. If you are using a system with
 
     #! /usr/bin/env python26
 
+The Python library for IPv4/IPv6 manipulation is required. You can install it using pip:
+
+    pip install ipaddress
+
+Or download it using a package manager, it's usually referred as `python-ipaddress`
+
 # Usage
 You can run the plugin using either a **hostname** (which will be resolved to an IP address) or an **IP address**:
 
