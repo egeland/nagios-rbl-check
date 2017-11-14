@@ -36,6 +36,7 @@ else:
     import Queue
 import threading
 import ipaddress
+import timeit
 
 # Python version check
 rv = (2, 6)
@@ -153,6 +154,7 @@ serverlist = [
 ####
 
 queue = Queue.Queue()
+debug = False
 global on_blacklist
 on_blacklist = []
 
@@ -167,6 +169,7 @@ class ThreadRBL(threading.Thread):
             # Grab hosts from queue
             hostname, root_name = self.queue.get()
             check_host = "%s.%s" % (hostname, root_name)
+            start_time = timeit.default_timer()
             try:
                 check_addr = socket.gethostbyname(check_host)
             except socket.error:
@@ -174,25 +177,29 @@ class ThreadRBL(threading.Thread):
             if check_addr is not None and "127.0.0." in check_addr:
                 on_blacklist.append(root_name)
 
+            elapsed = timeit.default_timer() - start_time
+            # If debug option is set it prints the time it took to get an answer from each RBL
+            if debug: print("It took %s seconds to get a response from the DNSBL %s" % (elapsed,root_name))
+
             # Signal queue that job is done
             self.queue.task_done()
 
 
 def usage(argv0):
-    print("%s -w <WARN level> -c <CRIT level> -h <hostname>" % argv0)
+    print("%s -w <WARN level> -c <CRIT level> -h <hostname> [-d|--debug]" % argv0)
     print(" or")
-    print("%s -w <WARN level> -c <CRIT level> -a <ip address>" % argv0)
+    print("%s -w <WARN level> -c <CRIT level> -a <ip address> [-d|--debug]" % argv0)
 
 
 def main(argv, environ):
     options, remainder = getopt.getopt(argv[1:],
-                                       "w:c:h:a:",
-                                       ["warn=", "crit=", "host=", "address="])
+                                       "w:c:h:a:d",
+                                       ["warn=", "crit=", "host=", "address=","debug"])
     status = {'OK': 0, 'WARNING': 1, 'CRITICAL': 2, 'UNKNOWN': 3}
     host = None
     addr = None
 
-    if 3 != len(options):
+    if len(options) > 4 or len(options) < 3:
         usage(argv[0])
         sys.exit(status['UNKNOWN'])
 
@@ -205,6 +212,9 @@ def main(argv, environ):
             host = val
         elif field in ('-a', '--address'):
             addr = val
+        elif field in ('-d', '--debug'):
+            global debug
+            debug = True
         else:
             usage(argv[0])
             sys.exit(status['UNKNOWN'])
