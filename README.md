@@ -9,7 +9,7 @@ The plugin requires Python version 2.6 or higher. If you are using a system with
 
     #! /usr/bin/env python26
 
-The Python library for IPv4/IPv6 manipulation is required. You can install it using pip:
+The Python library for IPv4/IPv6 manipulation is required (included in Python 3.3 and later). You can install it using pip:
 
     pip install ipaddress
 
