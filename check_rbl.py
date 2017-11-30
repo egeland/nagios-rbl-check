@@ -230,7 +230,7 @@ def main(argv, environ):
             print("ERROR: Host '%s' not found - maybe try a FQDN?" % host)
             sys.exit(status['UNKNOWN'])
 
-    if sys.version_info.major >= 3:
+    if sys.version_info[0] >= 3:
         ip = ipaddress.ip_address(addr)
     else:
         ip = ipaddress.ip_address(unicode(addr))
