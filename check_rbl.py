@@ -30,7 +30,7 @@ import os
 import getopt
 import socket
 import string
-if sys.version_info.major == 3:
+if sys.version_info[0] == 3:
     import queue as Queue
 else:
     import Queue
