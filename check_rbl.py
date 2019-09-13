@@ -189,15 +189,17 @@ def usage(argv0):
     print("%s -w <WARN level> -c <CRIT level> -h <hostname> [-d|--debug]" % argv0)
     print(" or")
     print("%s -w <WARN level> -c <CRIT level> -a <ip address> [-d|--debug]" % argv0)
-
+    print(" add -4 or -6 to force IPv4/IPv6 hostname lookups")
 
 def main(argv, environ):
     options, remainder = getopt.getopt(argv[1:],
-                                       "w:c:h:a:d",
-                                       ["warn=", "crit=", "host=", "address=","debug"])
+                                       "w:c:h:a:d46",
+                                       ["warn=", "crit=", "host=", "address=","debug", "ipv4", "ipv6"])
     status = {'OK': 0, 'WARNING': 1, 'CRITICAL': 2, 'UNKNOWN': 3}
     host = None
     addr = None
+    force_ipv4 = False
+    force_ipv6 = False
 
     if len(options) > 4 or len(options) < 3:
         usage(argv[0])
@@ -212,6 +214,10 @@ def main(argv, environ):
             host = val
         elif field in ('-a', '--address'):
             addr = val
+        elif field in ('-4', '--ipv4'):
+            force_ipv4 = True 
+        elif field in ('-6', '--ipv6'):
+            force_ipv6 = True
         elif field in ('-d', '--debug'):
             global debug
             debug = True
@@ -223,11 +229,22 @@ def main(argv, environ):
         print("ERROR: Cannot use both host and address. Please choose one.")
         sys.exit(status['UNKNOWN'])
 
+    if force_ipv4 and force_ipv6:
+        print("ERROR: Cannot force both IPv4 and IPv6. Please choose one.")
+        sys.exit(status['UNKNOWN'])
+
+    if addr and (force_ipv4 or force_ipv6):
+        print("ERROR: Cannot force IPv4 or IPv6 in address mode. Please supply a hostname.")
+        sys.exit(status['UNKNOWN'])
+
     if host:
         try:
-            addr = socket.gethostbyname(host)
-        except:
-            print("ERROR: Host '%s' not found - maybe try a FQDN?" % host)
+            if force_ipv6:
+                addr = socket.getaddrinfo(host, None, socket.AF_INET6)[0][4][0]
+            else:
+                addr = socket.gethostbyname(host)
+        except Exception as e:
+            print("ERROR resolving '%s': %s" % (host, e))
             sys.exit(status['UNKNOWN'])
 
     if sys.version_info[0] >= 3:
