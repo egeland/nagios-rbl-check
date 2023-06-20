@@ -266,7 +266,7 @@ def main(argv, environ):
     # Spawn a pool of threads then pass them the queue
     for i in range(10):
         t = ThreadRBL(queue)
-        t.setDaemon(True)
+        t.daemon = True
         t.start()
 
     # Populate the queue
