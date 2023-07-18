@@ -1,11 +1,13 @@
 name: Python Test
 
-on: [push]
+on:
+  push:
+  workflow_dispatch:
 
 env:
-    WARNING: 99
-    CRITICAL: 99
-    TEST_HOST: "1.1.1.1"
+  TEST_HOST: "1.1.1.1"
+  CRITICAL: 99
+  WARNING: 99
 
 jobs:
   test:
