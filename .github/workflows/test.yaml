@@ -2,6 +2,11 @@ name: Python Test
 
 on: [push]
 
+env:
+    WARNING: 99
+    CRITICAL: 99
+    TEST_HOST: "1.1.1.1"
+
 jobs:
   test:
     name: Test
@@ -43,5 +48,5 @@ jobs:
 
       - name: Test ${{ matrix.version }}
         run: |
-          coverage run check_rbl.py -w99 -c99 -a 8.8.8.8
+          coverage run check_rbl.py -w $WARNING -c $CRITICAL -a $TEST_HOST
           coverage report
