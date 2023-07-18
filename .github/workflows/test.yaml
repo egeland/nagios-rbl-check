@@ -3,11 +3,22 @@ name: Python Test
 on:
   push:
   workflow_dispatch:
-
-env:
-  TEST_HOST: "1.1.1.1"
-  CRITICAL: 99
-  WARNING: 99
+    inputs:
+      host:
+        description: 'IP Address of Host to Test'
+        required: false
+        default: '1.1.1.1'
+        type: string
+      critical:
+        description: 'Critical Level to Test'
+        required: false
+        default: '99'
+        type: string
+      warning:
+        description: 'Warning Level to Test'
+        required: false
+        default: '99'
+        type: string
 
 jobs:
   test:
@@ -50,5 +61,5 @@ jobs:
 
       - name: Test ${{ matrix.version }}
         run: |
-          coverage run check_rbl.py -w $WARNING -c $CRITICAL -a $TEST_HOST
+          coverage run check_rbl.py -w ${{ inputs.warning }} -c ${{ inputs.critical }} -a ${{ inputs.host }}
           coverage report
