@@ -36,7 +36,7 @@ jobs:
       - name: Setup ${{ matrix.version }}
         run: |
           python -m pip install --upgrade pip
-          pip install ruff coverage
+          pip install ruff coverage[toml] 
 
       - name: Lint ${{ matrix.version }}
         run: ruff .
