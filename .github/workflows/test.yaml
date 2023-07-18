@@ -6,17 +6,17 @@ on:
     inputs:
       host:
         description: 'IP Address of Host to Test'
-        required: false
+        required: true
         default: '1.1.1.1'
         type: string
       critical:
         description: 'Critical Level to Test'
-        required: false
+        required: true
         default: '99'
         type: string
       warning:
         description: 'Warning Level to Test'
-        required: false
+        required: true
         default: '99'
         type: string
 
