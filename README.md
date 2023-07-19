@@ -1,4 +1,4 @@
-[![Test](https://github.com/github/docs/actions/workflows/test.yml/badge.svg)](https://github.com/smashedr/nagios-rbl-check/actions)
+[![Test](https://github.com/github/docs/actions/workflows/test.yml/badge.svg)](https://github.com/egeland/nagios-rbl-check/actions)
 # Nagios RBL / DNSBL Check
 
 A Python-based Nagios/Icinga plugin to check whether a host is listed on any known DNS-based spam blacklists.
