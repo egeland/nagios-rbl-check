@@ -3,7 +3,7 @@ name: Python Test
 on:
   push:
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
   workflow_dispatch:
     inputs:
       host:
@@ -52,24 +52,28 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Checkout
+      - name: "Checkout"
         uses: actions/checkout@v3
 
-      - name: Setup Python ${{ matrix.version }}
+      - name: "Setup Python ${{ matrix.version }}"
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.version }}
 
-      - name: Dependencies ${{ matrix.version }}
+      - name: "Dependencies ${{ matrix.version }}"
         run: |
           python -m pip install --upgrade pip
           pip install flake8 coverage
 
-      - name: Lint ${{ matrix.version }}
+      - name: "Lint ${{ matrix.version }}"
         run: |
           flake8 check_rbl.py
 
-      - name: Test ${{ matrix.version }}
+      - name: "Test ${{ matrix.version }}"
         run: |
           coverage run check_rbl.py -w $WARNING -c $CRITICAL -a $TEST_HOST
           coverage report
+          coverage xml
+
+      - name: "Coveralls"
+        uses: coverallsapp/github-action@v2

@@ -1,4 +1,5 @@
 [![Test](https://github.com/github/docs/actions/workflows/test.yml/badge.svg)](https://github.com/egeland/nagios-rbl-check/actions)
+[![Coverage](https://coveralls.io/repos/github/egeland/nagios-rbl-check/badge.svg?branch=master)](https://coveralls.io/github/egeland/nagios-rbl-check?branch=master)
 # Nagios RBL / DNSBL Check
 
 A Python-based Nagios/Icinga plugin to check whether a host is listed on any known 
