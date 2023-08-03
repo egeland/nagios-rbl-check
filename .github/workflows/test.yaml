@@ -1,0 +1,81 @@
+name: Python Test
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+  workflow_dispatch:
+    inputs:
+      host:
+        description: "IP Address of Host to Test"
+        type: string
+        required: false
+        default: "1.1.1.1"
+      critical:
+        description: "Critical Level to Test"
+        type: string
+        required: false
+        default: "99"
+      warning:
+        description: "Warning Level to Test"
+        type: string
+        required: false
+        default: "99"
+
+env:
+  COVERALLS_VERSION: "3.11"
+  TEST_HOST: ${{ github.event.inputs.host || '1.1.1.1' }}
+  CRITICAL: ${{ github.event.inputs.critical || '99' }}
+  WARNING: ${{ github.event.inputs.warning || '99' }}
+
+jobs:
+  test:
+    name: Test
+    timeout-minutes: 5
+    if: ${{ !contains(github.event.head_commit.message, '#noci') }}
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, ubuntu-20.04]
+        version: ["3.6", "3.7", "3.8", "3.9", "3.10", "3.11"]
+        exclude:
+          - os: ubuntu-22.04
+            version: "3.6"
+          - os: ubuntu-20.04
+            version: "3.7"
+          - os: ubuntu-20.04
+            version: "3.8"
+          - os: ubuntu-20.04
+            version: "3.9"
+          - os: ubuntu-20.04
+            version: "3.10"
+          - os: ubuntu-20.04
+            version: "3.11"
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v3
+
+      - name: "Setup Python ${{ matrix.version }}"
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.version }}
+
+      - name: "Dependencies ${{ matrix.version }}"
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 coverage
+
+      - name: "Lint ${{ matrix.version }}"
+        run: |
+          flake8 check_rbl.py
+
+      - name: "Test ${{ matrix.version }}"
+        run: |
+          coverage run check_rbl.py -w $WARNING -c $CRITICAL -a $TEST_HOST
+          coverage report
+
+      - name: "Coveralls"
+        if: ${{ matrix.version == env.COVERALLS_VERSION }}
+        uses: coverallsapp/github-action@v2
