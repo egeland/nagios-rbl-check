@@ -2,6 +2,7 @@ name: Python Test
 
 on:
   push:
+    branches: ["master"]
   pull_request:
     branches: ["master"]
   workflow_dispatch:
@@ -23,6 +24,7 @@ on:
         default: "99"
 
 env:
+  COVERALLS_VERSION: "3.11"
   TEST_HOST: ${{ github.event.inputs.host || '1.1.1.1' }}
   CRITICAL: ${{ github.event.inputs.critical || '99' }}
   WARNING: ${{ github.event.inputs.warning || '99' }}
@@ -75,4 +77,5 @@ jobs:
           coverage report
 
       - name: "Coveralls"
+        if: ${{ matrix.version == env.COVERALLS_VERSION }}
         uses: coverallsapp/github-action@v2
