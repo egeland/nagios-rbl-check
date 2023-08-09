@@ -31,7 +31,8 @@ on:
 env:
   COVERALLS_VERSION: "3.11"
   TEST_HOST: ${{ github.event.inputs.host || 'one.one.one.one' }}
-  TEST_IPV6: ${{ github.event.inputs.ipv4 || '2606:4700:4700::1111' }}
+  TEST_IPV4: "1.1.1.1"
+  TEST_IPV6: ${{ github.event.inputs.ipv6 || '2606:4700:4700::1111' }}
   CRITICAL: ${{ github.event.inputs.critical || '99' }}
   WARNING: ${{ github.event.inputs.warning || '99' }}
 
