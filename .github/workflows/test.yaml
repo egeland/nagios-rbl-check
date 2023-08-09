@@ -79,12 +79,7 @@ jobs:
 
       - name: "Test ${{ matrix.version }}"
         run: |
-          coverage run check_rbl.py ||:
-          coverage run -a check_rbl.py -w $WARNING ||:
-          coverage run -a check_rbl.py -a $TEST_IPV4 -h $TEST_HOST ||:
-          coverage run -a check_rbl.py --ipv4 $TEST_IPV4 --ipv6 $TEST_IPV6 ||:
-          coverage run -a check_rbl.py -h invalid.com ||:
-          coverage run -a check_rbl.py -d -w $WARNING -c $CRITICAL -h $TEST_HOST
+          coverage run check_rbl.py -d -w $WARNING -c $CRITICAL -h $TEST_HOST
           coverage run -a check_rbl.py -d -w $WARNING -c $CRITICAL -a $TEST_IPV6
           coverage report -m
 
